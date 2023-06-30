@@ -49,7 +49,7 @@ const ConversationLists = () => {
     }
 
     return (
-        <ul className="border mt-3 rounded h-[calc(100vh_-_162px)] overflow-y-auto">
+        <ul className="border mt-3 rounded h-[calc(100vh_-_206px)] overflow-y-auto">
             {content}
         </ul>
     )
