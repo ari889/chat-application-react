@@ -2,19 +2,19 @@
   "users": [
     {
       "email": "sumit@learnwithsumit.com",
-      "password": "$2y$10$.QetZxh1sNSa7IRkNP9itedrqkkREeDrZXY4CkkIJUNZ6TK0BD0fS",
+      "password": "$2y$10$CN02DOPRH60EbCqPzoFcGOHOZYnM4SRBHvAseYPF492tMZ/DvEzey",
       "name": "Sumit Saha",
       "id": 1
     },
     {
       "email": "akash@learnwithsumit.com",
-      "password": "$2a$10$Oc6jXnK6/pbSqmkngo/b.OhsU3JRf4OU1h9QwIoqz8ZUpG/hgHq72",
+      "password": "$2y$10$CN02DOPRH60EbCqPzoFcGOHOZYnM4SRBHvAseYPF492tMZ/DvEzey",
       "name": "Akash Ahmed",
       "id": 2
     },
     {
       "email": "a@gmail.com",
-      "password": "$2a$10$x2ecrwyZoaxK04/L8Kgo6O0qquxZi35Ybct9cpYvuCBo81HlrY78.",
+      "password": "$2y$10$CN02DOPRH60EbCqPzoFcGOHOZYnM4SRBHvAseYPF492tMZ/DvEzey",
       "name": "Arijit Banarjee",
       "id": 3
     },
@@ -119,6 +119,12 @@
       "password": "$2a$10$x2ecrwyZoaxK04/L8Kgo6O0qquxZi35Ybct9cpYvuCBo81HlrY78.",
       "name": "Mr r",
       "id": 3
+    },
+    {
+      "email": "arijitbanarjee889@gmail.com",
+      "password": "$2a$10$JyxT986cq6TrYo7u6.zv4.l8oBPbu72pm7UrmSCI2Bp1oG9zq2gdu",
+      "name": "Arijit banarjee",
+      "id": 5
     }
   ],
   "conversations": [
