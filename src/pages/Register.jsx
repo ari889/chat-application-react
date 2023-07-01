@@ -3,8 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import { useRegisterMutation } from "../features/auth/authApi";
-import isValidEmail from "../hooks/isValidEmail";
 import Error from "../ui/Error";
+import isValidEmail from "../utils/isValidEmail";
 
 const Register = () => {
     /**
