@@ -13,18 +13,20 @@ const Messages = ({ messages }) => {
     const { email } = user || {};
 
     return (
-        <ul className="border rounded-sm p-3 mt-3 h-[calc(100vh_-_238px)] overflow-y-auto flex flex-col-reverse">
-            {messages.slice().sort((a, b) => a.timestamp - b.timestamp).map((message) => {
-                const { message: lastMessage, id, sender } = message || {};
-                const isSender = sender.email === email;
+        <div className="border rounded-sm p-3 mt-3 h-[calc(100vh_-_238px)] overflow-y-auto flex flex-col-reverse">
+            <ul className="space-y-2">
+                {messages.slice().sort((a, b) => a.timestamp - b.timestamp).map((message) => {
+                    const { message: lastMessage, id, sender } = message || {};
+                    const isSender = sender.email === email;
 
-                return isSender ? (
-                    <li key={id} className="my-3 table py-1 px-4 rounded-md max-w-lg bg-blue-500 text-white my-3 ml-auto">{lastMessage}</li>
-                ) : (
-                    <li key={id} className="my-3 shadow-md table py-1 px-4 rounded-md text-left max-w-lg">{lastMessage}</li>
-                );
-            })}
-        </ul>
+                    return isSender ? (
+                        <li key={id} className="my-3 table py-1 px-4 rounded-md max-w-lg bg-blue-500 text-white my-3 ml-auto">{lastMessage}</li>
+                    ) : (
+                        <li key={id} className="my-3 shadow-md table py-1 px-4 rounded-md text-left max-w-lg">{lastMessage}</li>
+                    );
+                })}
+            </ul>
+        </div>
     )
 }
 
