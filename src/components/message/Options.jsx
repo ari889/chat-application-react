@@ -40,19 +40,21 @@ const Options = ({ info }) => {
      */
     const handleSubmit = (e) => {
         e.preventDefault();
-        /**
-         * send message
-         */
-        editConversation({
-            id: info?.conversationId,
-            sender: loggedInUser?.email,
-            data: {
-                participants: `${loggedInUser.email}-${participantUser.email}`,
-                users: [loggedInUser, participantUser],
-                message,
-                timestamp: new Date().getTime()
-            }
-        });
+        if (message !== '') {
+            /**
+             * send message
+             */
+            editConversation({
+                id: info?.conversationId,
+                sender: loggedInUser?.email,
+                data: {
+                    participants: `${loggedInUser.email}-${participantUser.email}`,
+                    users: [loggedInUser, participantUser],
+                    message,
+                    timestamp: new Date().getTime()
+                }
+            });
+        }
     }
     return (
         <form onSubmit={handleSubmit} className="relative mt-3">

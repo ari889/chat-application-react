@@ -1,9 +1,10 @@
-import React from 'react'
 import ChatHead from './ChatHead'
 import Messages from './Messages'
 import Options from './Options'
 import { useParams } from 'react-router-dom'
 import { useGetMessagesQuery } from '../../features/messages/messagesApi'
+import { useSelector } from 'react-redux'
+import Error from '../../ui/Error'
 
 const ChatBody = () => {
     /**
@@ -12,9 +13,19 @@ const ChatBody = () => {
     const { id } = useParams();
 
     /**
+     * get current user
+     */
+    const { user: loggedInUser } = useSelector(state => state.auth);
+
+    /**
+     * get logged in user email
+     */
+    const { email: receiverEmail } = loggedInUser || {};
+
+    /**
      * get messages
      */
-    const { data: messages, isLoading, isError, error } = useGetMessagesQuery(id);
+    const { data: messages, isLoading, isError, error } = useGetMessagesQuery({ id, receiverEmail });
 
     /**
      * decide what to render

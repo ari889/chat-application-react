@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import isValidEmail from '../utils/isValidEmail';
 import { useGetUserQuery } from '../features/users/UsersApi';
 import { useDispatch, useSelector } from 'react-redux';

@@ -1,10 +1,52 @@
 import { apiSlice } from "../api/apiSlice";
 import { messagesApi } from "../messages/messagesApi";
+import io from 'socket.io-client'
 
 export const conversationsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getConversations: builder.query({
-            query: (email) => `/conversations?participants_like=${email}&_sort=timestamp&_order=desc&_page=1&_limit=${import.meta.env.VITE_CONVERSATIONS_PER_PAGE}`
+            query: (email) => `/conversations?participants_like=${email}&_sort=timestamp&_order=desc&_page=1&_limit=${import.meta.env.VITE_CONVERSATIONS_PER_PAGE}`,
+            async onCacheEntryAdded(arg, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) {
+                // create socket
+                const socket = io(import.meta.env.VITE_REACT_APP_API__URL, {
+                    reconnectionDelay: 200,
+                    reconnection: true,
+                    reconnectionAttempts: 10,
+                    transports: ["websocket"],
+                    agent: false,
+                    upgrade: false,
+                    rejectUnauthorized: false
+                });
+
+                try {
+                    await cacheDataLoaded;
+                    socket.on("conversation", (data) => {
+                        /**
+                         * am i receiver or not
+                        */
+                        const receiverEmail = data?.data?.users[1].email;
+
+                        if (arg == receiverEmail) {
+                            /**
+                             * update conversation cache
+                             */
+                            updateCachedData(draft => {
+                                const conversation = draft.find(c => c.id == data?.data?.id);
+
+                                if (conversation?.id) { // update existing conversation
+                                    conversation.message = data?.data?.message;
+                                    conversation.timestamp = data?.data?.timestamp;
+                                } else { // add new conversation
+                                    draft.push(data?.data);
+                                }
+                            })
+                        }
+                    })
+                } catch (error) { }
+
+                await cacheEntryRemoved;
+                socket.close();
+            }
         }),
         getConversation: builder.query({
             query: ({ userEmail, participantEmail }) => `/conversations?participants_like=${userEmail}-${participantEmail}&&participants_like=${participantEmail}-${userEmail}`
@@ -100,7 +142,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
                         dispatch(
                             apiSlice.util.updateQueryData(
                                 "getMessages",
-                                res.conversationId.toString(),
+                                { id: res.conversationId.toString(), receiverEmail: res.receiver.email },
                                 (draft) => {
                                     draft.push(res);
                                 }
