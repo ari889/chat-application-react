@@ -44,7 +44,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
                                     conversation.message = data?.data?.message;
                                     conversation.timestamp = data?.data?.timestamp;
                                 } else { // add new conversation
-                                    draft.push(data?.data);
+                                    draft?.data?.push(data?.data);
                                 }
                             })
                         }
@@ -179,7 +179,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
                                 "getMessages",
                                 { id: res?.conversationId?.toString(), receiverEmail: res?.receiver?.email },
                                 (draft) => {
-                                    draft.push(res);
+                                    draft?.data?.unshift(res);
                                 }
                             )
                         );

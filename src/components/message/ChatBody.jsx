@@ -25,7 +25,12 @@ const ChatBody = () => {
     /**
      * get messages
      */
-    const { data: messages, isLoading, isError, error } = useGetMessagesQuery({ id, receiverEmail });
+    const { data, isLoading, isError, error } = useGetMessagesQuery({ id, receiverEmail });
+
+    /**
+     * get messages and total count
+     */
+    const { data: messages, totalCount } = data || {};
 
     /**
      * decide what to render
@@ -44,7 +49,7 @@ const ChatBody = () => {
         content = (
             <>
                 <ChatHead message={messages[0]} />
-                <Messages messages={messages} />
+                <Messages messages={messages} totalCount={totalCount} conversationId={id} />
                 <Options info={messages[0]} />
             </>
         );

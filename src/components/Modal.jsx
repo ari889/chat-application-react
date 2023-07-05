@@ -78,7 +78,7 @@ const Modal = ({ open, control }) => {
                     setConversation(data)
                 })
                 .catch((err) => {
-                    setResponseError("There was a problem!")
+                    setResponseError("There was a problem!");
                 })
         }
     }, [participant, dispatch, myEmail, to]);
