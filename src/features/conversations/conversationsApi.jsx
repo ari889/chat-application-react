@@ -5,11 +5,10 @@ import io from 'socket.io-client'
 export const conversationsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getConversations: builder.query({
-            query: (email) => `/conversations?participants_like=${email}&_sort=timestamp&_order=desc&_page=1&_limit=${import.meta.env.VITE_CONVERSATIONS_PER_PAGE}`,
-            transformResponse(apiResponse, meta) {
-                const totalCount = meta.response.headers.get("X-Total-Count");
+            query: (email) => `/conversations?participants=${email}&start=0&limit=${import.meta.env.VITE_CONVERSATIONS_PER_PAGE}`,
+            transformResponse: ({ conversations, totalCount }, meta) => {
                 return {
-                    data: apiResponse,
+                    data: conversations,
                     totalCount
                 }
             },
@@ -31,16 +30,16 @@ export const conversationsApi = apiSlice.injectEndpoints({
                         /**
                          * am i receiver or not
                         */
-                        const receiverEmail = data?.data?.users[1].email;
+                        const receiverEmail = data?.data?.users[1]?.email;
 
                         if (arg == receiverEmail) {
                             /**
                              * update conversation cache
                              */
                             updateCachedData(draft => {
-                                const conversation = draft.find(c => c.id == data?.data?.id);
+                                const conversation = draft?.data?.find(c => c._id == data?.data?._id);
 
-                                if (conversation?.id) { // update existing conversation
+                                if (conversation?._id) { // update existing conversation
                                     conversation.message = data?.data?.message;
                                     conversation.timestamp = data?.data?.timestamp;
                                 } else { // add new conversation
@@ -56,12 +55,12 @@ export const conversationsApi = apiSlice.injectEndpoints({
             }
         }),
         getMoreConversations: builder.query({
-            query: ({ email, page }) => `/conversations?participants_like=${email}&_sort=timestamp&_order=desc&_page=${page}&_limit=${import.meta.env.VITE_CONVERSATIONS_PER_PAGE}`,
+            query: ({ email, start }) => `/conversations?participants=${email}&start=${start}&_limit=${import.meta.env.VITE_CONVERSATIONS_PER_PAGE}`,
             async onQueryStarted({ email }, { queryFulfilled, dispatch }) {
                 try {
                     const conversations = await queryFulfilled;
 
-                    if (conversations?.data?.length > 0) {
+                    if (conversations?.data?.conversations?.length > 0) {
                         // update conversation pessimistically start
                         dispatch(
                             apiSlice.util.updateQueryData(
@@ -71,7 +70,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
                                     return {
                                         data: [
                                             ...draft.data,
-                                            ...conversations.data
+                                            ...conversations.data.conversations
                                         ],
                                         totalCount: Number(draft.totalCount)
                                     }
@@ -84,7 +83,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
             }
         }),
         getConversation: builder.query({
-            query: ({ userEmail, participantEmail }) => `/conversations?participants_like=${userEmail}-${participantEmail}&&participants_like=${participantEmail}-${userEmail}`
+            query: ({ userEmail, participantEmail }) => `/conversations?participants=${userEmail}-${participantEmail}&&participants=${participantEmail}-${userEmail}`
         }),
         addConversation: builder.mutation({
             query: ({ sender, data }) => ({
@@ -95,19 +94,19 @@ export const conversationsApi = apiSlice.injectEndpoints({
             async onQueryStarted(arg, { queryFulfilled, dispatch }) {
                 const conversation = await queryFulfilled;
 
-                if (conversation?.data?.id) {
+                if (conversation?.data?._id) {
                     /**
                      * silent entry to the message table
                      */
-                    const users = arg.data.users;
+                    const users = conversation?.data?.users;
                     const senderUser = users.find((user) => user.email === arg.sender); // sender info
                     const receiverUser = users.find(user => user.email !== arg.sender); // receiver info
 
                     dispatch(
                         messagesApi.endpoints.addMessage.initiate({
-                            conversationId: conversation?.data?.id,
-                            sender: senderUser,
-                            receiver: receiverUser,
+                            conversationId: conversation?.data?._id,
+                            sender: senderUser._id,
+                            receiver: receiverUser._id,
                             message: arg.data.message,
                             timestamp: arg.data.timestamp
                         })
@@ -142,7 +141,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
                             /**
                              * find the conversation from draft state and update
                              */
-                            const draftConversation = draft.data.find(c => c.id == arg.id);
+                            const draftConversation = draft.data.find(c => c._id == arg.id);
                             draftConversation.message = arg.data.message;
                             draftConversation.timestamp = arg.data.timestamp;
                         }
@@ -153,19 +152,19 @@ export const conversationsApi = apiSlice.injectEndpoints({
                 try {
                     const conversation = await queryFulfilled;
 
-                    if (conversation?.data?.id) {
+                    if (conversation?.data?._id) {
                         /**
                          * silent entry to the message table
                          */
-                        const users = arg.data.users;
+                        const users = conversation?.data?.users;
                         const senderUser = users.find((user) => user.email === arg.sender); // sender info
                         const receiverUser = users.find(user => user.email !== arg.sender); // receiver info
 
                         const res = await dispatch(
                             messagesApi.endpoints.addMessage.initiate({
-                                conversationId: conversation?.data?.id,
-                                sender: senderUser,
-                                receiver: receiverUser,
+                                conversationId: conversation?.data?._id,
+                                sender: senderUser._id,
+                                receiver: receiverUser._id,
                                 message: arg.data.message,
                                 timestamp: arg.data.timestamp
                             })

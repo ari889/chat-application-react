@@ -26,9 +26,9 @@ const ConversationLists = () => {
     const { email } = auth?.user || {};
 
     /**
-     * page state
+     * start state
      */
-    const [page, setPage] = useState(1);
+    const [start, setStart] = useState(0);
 
     /**
      * has more data state
@@ -49,31 +49,31 @@ const ConversationLists = () => {
      * fetch more page data
      */
     const fetchMore = () => {
-        setPage(prevPage => prevPage + 1);
+        setStart(prevState => prevState + Number(import.meta.env.VITE_CONVERSATIONS_PER_PAGE))
     }
 
     /**
      * fetch more data when page change
      */
     useEffect(() => {
-        if (page > 1) {
+        if (start > 0 && start <= totalCount) {
             dispatch(
                 conversationsApi.endpoints.getMoreConversations.initiate({
-                    email, page
+                    email, start
                 })
             )
         }
-    }, [page, email, dispatch]);
+    }, [start, email, dispatch, totalCount]);
 
     /**
      * set has more on total count change
      */
     useEffect(() => {
         if (totalCount > 0) {
-            const more = Math.ceil(totalCount / Number(import.meta.env.VITE_CONVERSATIONS_PER_PAGE)) > page;
+            const more = conversations?.length < totalCount;
             setHasMore(more);
         }
-    }, [totalCount, page]);
+    }, [totalCount, conversations]);
 
 
     /**
@@ -98,10 +98,10 @@ const ConversationLists = () => {
             height={window.innerHeight - 206}
         >
             {conversations.map(conversation => {
-                const { id, message, timestamp } = conversation;
+                const { _id, message, timestamp } = conversation;
                 const { name, email: partnerEmail } = getPartnerInfo(conversation.users, email);
 
-                return <ConversationList key={id} id={id} avatar={gravatarUrl(partnerEmail, {
+                return <ConversationList key={_id} id={_id} avatar={gravatarUrl(partnerEmail, {
                     size: 80
                 })} name={name} lastMessage={message} lastTime={moment(timestamp).fromNow()} />
             })}

@@ -128,10 +128,10 @@ const Modal = ({ open, control }) => {
              */
             if (conversation?.length > 0) {
                 editConversation({
-                    id: conversation[0].id,
+                    id: conversation[0]._id,
                     data: {
                         participants: `${myEmail}-${participant[0].email}`,
-                        users: [loggedInUser, participant[0]],
+                        users: [loggedInUser._id, participant[0]._id],
                         message,
                         timestamp: new Date().getTime()
                     },
@@ -142,7 +142,7 @@ const Modal = ({ open, control }) => {
                     sender: myEmail,
                     data: {
                         participants: `${myEmail}-${participant[0].email}`,
-                        users: [loggedInUser, participant[0]],
+                        users: [loggedInUser._id, participant[0]._id],
                         message,
                         timestamp: new Date().getTime()
                     }
@@ -213,8 +213,8 @@ const Modal = ({ open, control }) => {
                         </button>
                     </div>
 
-                    {participant?.length === 0 && <Error message="This user doesn't exists!" />}
-                    {responseError && <Error message={responseError} />}
+                    {/* {participant?.length === 0 && <Error message="This user doesn't exists!" />} */}
+                    {/* {responseError && <Error message={responseError} />} */}
                 </form>
             </div>
         </>

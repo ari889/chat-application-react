@@ -21,7 +21,8 @@ const Messages = ({ messages, totalCount, conversationId }) => {
     /**
      * page state
      */
-    const [page, setPage] = useState(1);
+    // const [page, setPage] = useState(1);
+    const [start, setStart] = useState(0);
 
     /**
      * has more state
@@ -32,29 +33,30 @@ const Messages = ({ messages, totalCount, conversationId }) => {
      * fetch more function
      */
     const fetchMore = () => {
-        setPage(prevPage => prevPage + 1);
+        setStart(prevState => prevState + Number(import.meta.env.VITE_MESSAGES_PER_PAGE));
     }
 
     /**
      * get more data on page changes
      */
     useEffect(() => {
-        if (page > 1) {
+        if (start > 0 && start <= totalCount) {
             dispatch(
-                messagesApi.endpoints.getMoreMessages.initiate({ id: conversationId, receiverEmail: email, page })
+                messagesApi.endpoints.getMoreMessages.initiate({ id: conversationId, receiverEmail: email, start })
             );
         }
-    }, [page, email, conversationId, dispatch]);
+    }, [start, email, conversationId, dispatch, totalCount]);
 
     /**
      * set has more on return request
      */
     useEffect(() => {
         if (totalCount > 0) {
-            const more = Math.ceil(totalCount / Number(import.meta.env.VITE_MESSAGES_PER_PAGE)) > page;
+            // const more = Math.ceil(totalCount / Number(import.meta.env.VITE_MESSAGES_PER_PAGE)) > page;
+            const more = messages?.length < totalCount;
             setHasMore(more);
         }
-    }, [totalCount, page]);
+    }, [totalCount, messages]);
 
     return (
         <ul id="messageBody" className="border rounded-sm mt-3 h-[calc(100vh_-_238px)] flex flex-col-reverse">
@@ -70,13 +72,13 @@ const Messages = ({ messages, totalCount, conversationId }) => {
                 className="p-3"
             >
                 {messages.map((message) => {
-                    const { message: lastMessage, id, sender } = message || {};
+                    const { message: lastMessage, _id, sender } = message || {};
                     const isSender = sender.email === email;
 
                     return isSender ? (
-                        <li key={id} className="my-3 table py-1 px-4 rounded-md max-w-lg bg-blue-500 text-white my-3 ml-auto">{lastMessage}</li>
+                        <li key={_id} className="my-3 table py-1 px-4 rounded-md max-w-lg bg-blue-500 text-white my-3 ml-auto">{lastMessage}</li>
                     ) : (
-                        <li key={id} className="my-3 shadow-md table py-1 px-4 rounded-md text-left max-w-lg">{lastMessage}</li>
+                        <li key={_id} className="my-3 shadow-md table py-1 px-4 rounded-md text-left max-w-lg">{lastMessage}</li>
                     );
                 })}
             </InfiniteScroll>

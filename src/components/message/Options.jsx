@@ -49,7 +49,7 @@ const Options = ({ info }) => {
                 sender: loggedInUser?.email,
                 data: {
                     participants: `${loggedInUser.email}-${participantUser.email}`,
-                    users: [loggedInUser, participantUser],
+                    users: [loggedInUser._id, participantUser._id],
                     message,
                     timestamp: new Date().getTime()
                 }

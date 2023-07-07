@@ -4,11 +4,10 @@ import { io } from 'socket.io-client'
 export const messagesApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getMessages: builder.query({
-            query: ({ id, receiverEmail }) => `/messages?conversationId=${id}&_sort=timestamp&_order=desc&_page=1&_limit=${import.meta.env.VITE_MESSAGES_PER_PAGE}`,
-            transformResponse(apiResponse, meta) {
-                const totalCount = meta.response.headers.get("X-Total-Count");
+            query: ({ id, receiverEmail }) => `/messages/${id}?start=0&limit=${import.meta.env.VITE_MESSAGES_PER_PAGE}`,
+            transformResponse({ messages, totalCount }, meta) {
                 return {
-                    data: apiResponse,
+                    data: messages,
                     totalCount
                 }
             },
@@ -44,12 +43,12 @@ export const messagesApi = apiSlice.injectEndpoints({
             }
         }),
         getMoreMessages: builder.query({
-            query: ({ id, receiverEmail, page }) => `/messages?conversationId=${id}&_sort=timestamp&_order=desc&_page=${page}&_limit=${import.meta.env.VITE_MESSAGES_PER_PAGE}`,
+            query: ({ id, receiverEmail, start }) => `/messages/${id}?start=${start}&limit=${import.meta.env.VITE_MESSAGES_PER_PAGE}`,
             async onQueryStarted({ id, receiverEmail }, { queryFulfilled, dispatch }) {
                 try {
                     const messages = await queryFulfilled;
 
-                    if (messages?.data?.length > 0) {
+                    if (messages?.data?.messages?.length > 0) {
                         dispatch(
                             apiSlice.util.updateQueryData(
                                 "getMessages",
@@ -58,7 +57,7 @@ export const messagesApi = apiSlice.injectEndpoints({
                                     return {
                                         data: [
                                             ...draft.data,
-                                            ...messages.data
+                                            ...messages.data.messages
                                         ],
                                         totalCount: Number(draft.totalCount)
                                     }
