@@ -1,4 +1,5 @@
-import Header from "../includes/header"
+import Header from "../includes/Header"
+
 
 const Layout = ({ children }) => {
     return (

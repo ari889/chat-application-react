@@ -3,7 +3,6 @@ import isValidEmail from '../utils/isValidEmail';
 import { useGetUserQuery } from '../features/users/UsersApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { conversationsApi, useAddConversationMutation, useEditConversationMutation } from '../features/conversations/conversationsApi';
-import Error from '../ui/Error';
 
 const Modal = ({ open, control }) => {
     /**
