@@ -14,14 +14,14 @@ function App() {
     <div>Checking authenticatyion...</div>
   ) : (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/inbox" element={<PrivateRoute><Index /></PrivateRoute>} />
-          <Route path="/inbox/:id" element={<PrivateRoute><Index /></PrivateRoute>} />
-          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-          <Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
-        </Routes>
-      </Layout>
+      {/* <Layout> */}
+      <Routes>
+        <Route path="/inbox" element={<PrivateRoute><Index /></PrivateRoute>} />
+        <Route path="/inbox/:id" element={<PrivateRoute><Index /></PrivateRoute>} />
+        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
+      </Routes>
+      {/* </Layout> */}
     </BrowserRouter>
   )
 }
