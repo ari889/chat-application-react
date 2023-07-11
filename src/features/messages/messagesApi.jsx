@@ -11,7 +11,7 @@ export const messagesApi = apiSlice.injectEndpoints({
                     totalCount
                 }
             },
-            async onCacheEntryAdded(arg, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) {
+            async onCacheEntryAdded({ id, receiverEmail }, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) {
                 // create socket
                 const socket = io(import.meta.env.VITE_REACT_APP_API__URL, {
                     reconnectionDelay: 200,
@@ -30,9 +30,12 @@ export const messagesApi = apiSlice.injectEndpoints({
                         /**
                          * update conversation if I'm receiver
                          */
-                        if (data?.data?.conversationId == arg.id && arg.receiverEmail == arg.receiverEmail) {
+                        if (data?.data?.conversationId == id && data?.data?.receiver?.email == receiverEmail) {
                             updateCachedData(draft => {
                                 draft?.data?.unshift(data?.data);
+                                if (draft?.data?.length > Number(import.meta.env.VITE_MESSAGES_PER_PAGE)) {
+                                    draft?.data?.pop();
+                                }
                             })
                         }
                     })

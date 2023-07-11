@@ -56,7 +56,7 @@ const ChatBody = () => {
     }
 
     return (
-        <div className="p-3 w-3/4">
+        <div className="p-3 w-[calc(100%_-_100px)] md:w-[calc(100%_-_250px)] lg:w-[calc(100%_-_350px)]">
             {content}
         </div>
     )

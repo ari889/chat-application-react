@@ -75,7 +75,7 @@ const Modal = ({ open, control }) => {
             )
                 .unwrap()
                 .then((data) => {
-                    setConversation(data)
+                    setConversation(data?.conversations)
                 })
                 .catch((err) => {
                     setResponseError("There was a problem!");
@@ -120,8 +120,8 @@ const Modal = ({ open, control }) => {
         /**
          * check message is blank or not
          */
-        if (message == '') {
-            setResponseError("Please write an message!");
+        if (message == '' && email == '') {
+            setResponseError("Please write an message or email!");
         } else {
             /**
              * edit conversation if exists
@@ -136,7 +136,7 @@ const Modal = ({ open, control }) => {
                         timestamp: new Date().getTime()
                     },
                     sender: myEmail
-                })
+                });
             } else if (conversation?.length === 0) {
                 addConversation({
                     sender: myEmail,
@@ -146,7 +146,7 @@ const Modal = ({ open, control }) => {
                         message,
                         timestamp: new Date().getTime()
                     }
-                })
+                });
             }
         }
     }
