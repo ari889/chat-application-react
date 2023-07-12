@@ -43,7 +43,10 @@ export const conversationsApi = apiSlice.injectEndpoints({
                                     conversation.message = data?.data?.message;
                                     conversation.timestamp = data?.data?.timestamp;
                                 } else { // add new conversation
-                                    draft?.data?.push(data?.data);
+                                    draft?.data?.unshift(data?.data);
+                                    if (draft?.data?.length > Number(import.meta.env.VITE_CONVERSATIONS_PER_PAGE)) {
+                                        draft?.data?.pop();
+                                    }
                                 }
                             })
                         }
@@ -91,33 +94,37 @@ export const conversationsApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data
             }),
-            async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+            async onQueryStarted({ sender, data }, { queryFulfilled, dispatch }) {
                 const conversation = await queryFulfilled;
+
 
                 if (conversation?.data?._id) {
                     /**
                      * silent entry to the message table
-                     */
+                    */
                     const users = conversation?.data?.users;
-                    const senderUser = users.find((user) => user.email === arg.sender); // sender info
-                    const receiverUser = users.find(user => user.email !== arg.sender); // receiver info
+                    const senderUser = users.find((user) => user.email === sender); // sender info
+                    const receiverUser = users.find(user => user.email !== sender); // receiver info
 
                     dispatch(
                         messagesApi.endpoints.addMessage.initiate({
                             conversationId: conversation?.data?._id,
                             sender: senderUser._id,
                             receiver: receiverUser._id,
-                            message: arg.data.message,
-                            timestamp: arg.data.timestamp
+                            message: data.message,
+                            timestamp: data.timestamp
                         })
                     );
 
                     dispatch(
                         apiSlice.util.updateQueryData(
                             "getConversations",
-                            arg.sender,
+                            sender,
                             (draft) => {
                                 draft?.data?.unshift(conversation?.data);
+                                if (draft?.data?.length > Number(import.meta.env.VITE_CONVERSATIONS_PER_PAGE)) {
+                                    draft?.data?.pop();
+                                }
                             }
                         )
                     );
@@ -142,8 +149,11 @@ export const conversationsApi = apiSlice.injectEndpoints({
                              * find the conversation from draft state and update
                              */
                             const draftConversation = draft.data.find(c => c._id == arg.id);
-                            draftConversation.message = arg.data.message;
-                            draftConversation.timestamp = arg.data.timestamp;
+
+                            if (draftConversation) {
+                                draftConversation.message = arg.data.message;
+                                draftConversation.timestamp = arg.data.timestamp;
+                            }
                         }
                     )
                 )
@@ -172,13 +182,16 @@ export const conversationsApi = apiSlice.injectEndpoints({
 
                         /**
                          * message cache pessimistic update
-                         */
+                        */
                         dispatch(
                             apiSlice.util.updateQueryData(
                                 "getMessages",
-                                { id: res?.conversationId?.toString(), receiverEmail: res?.receiver?.email },
+                                { id: res?.conversationId, receiverEmail: res?.sender?.email },
                                 (draft) => {
                                     draft?.data?.unshift(res);
+                                    if (draft?.data?.length > Number(import.meta.env.VITE_MESSAGES_PER_PAGE)) {
+                                        draft?.data?.pop();
+                                    }
                                 }
                             )
                         );

@@ -76,9 +76,9 @@ const Messages = ({ messages, totalCount, conversationId }) => {
                     const isSender = sender.email === email;
 
                     return isSender ? (
-                        <li key={_id} className="my-3 table py-1 px-4 rounded-md max-w-lg bg-blue-500 text-white my-3 ml-auto">{lastMessage}</li>
+                        <li key={_id} className="my-3 table py-1 px-4 rounded-md max-w-lg bg-blue-500 text-white ml-auto">{lastMessage}</li>
                     ) : (
-                        <li key={_id} className="my-3 shadow-md table py-1 px-4 rounded-md text-left max-w-lg">{lastMessage}</li>
+                        <li key={_id} className="my-3 table py-1 px-4 rounded-md max-w-lg shadow-md mr-auto">{lastMessage}</li>
                     );
                 })}
             </InfiniteScroll>

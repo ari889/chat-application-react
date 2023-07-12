@@ -18,13 +18,13 @@ const Index = () => {
     const toggle = () => {
         setShow(prevState => !prevState);
     }
-
+    console.log('dynamic route')
     return (
         <div className="m-3 border-2 border-gray-300 flex flex-row justify-normal items-start">
-            <div className="p-3 w-1/4">
-                <Search />
+            <div className="p-3 w-[100px] md:w-[250px] lg:w-[350px]">
+                {/* <Search /> */}
                 <ConversationLists />
-                <button type="button" className="text-blue-600 text-2xl mt-3 ml-auto table" onClick={toggle}><FontAwesomeIcon icon={faCirclePlus} /></button>
+                <button type="button" className="text-blue-600 text-2xl mt-3 mx-auto sm:ml-auto table" onClick={toggle}><FontAwesomeIcon icon={faCirclePlus} /></button>
                 <Modal open={show} control={toggle} />
             </div>
             <ChatBody />
