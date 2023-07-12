@@ -8,6 +8,7 @@ import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import ConversationLoader from '../../ui/ConversationLoader';
 
 const ConversationLists = () => {
     /**
@@ -82,7 +83,7 @@ const ConversationLists = () => {
     let content = null;
 
     if (isLoading) {
-        content = <li className="m-2 text-center">Loading...</li>
+        content = <ConversationLoader />
     } else if (!isLoading && isError) {
         content = <li className="m-2 text-center">
             <Error message={error?.data} />

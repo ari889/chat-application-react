@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Error from "../ui/Error"
 import { useLoginMutation } from "../features/auth/authApi"
+import Input from "../components/form/Input"
+import Password from "../components/form/Password"
 
 const Login = () => {
     /**
@@ -32,7 +34,7 @@ const Login = () => {
     /**
      * login response hook
      */
-    const [login, { data, isLoading, isError, error: responseError }] = useLoginMutation();
+    const [login, { data, isLoading, error: responseError }] = useLoginMutation();
 
     /**
      * 
@@ -86,16 +88,11 @@ const Login = () => {
             <h1 className="text-2xl font-semibold mb-5">Login</h1>
             {error?.common && <Error message={error?.common} />}
             <form onSubmit={handleOnSubmit}>
-                <label htmlFor="email" className="mb-2 block">Email <span className="text-red-600">*</span></label>
-                <input type="text" onChange={handleOnChange} value={form.email} name="email" id="email" className={`border border-solid ${error?.email ? 'border-red-600' : 'border-gray-200'} rounded-sm block w-full px-3 py-2 transition delay-75 focus:outline-0 ${error?.email ? 'focus:border-red-700' : 'focus:border-gray-300'}`} />
-                {error?.email && <span className="text-red-600 mt-1 block">{error?.email?.msg}</span>}
-                <label htmlFor="password" className="mb-2 block mt-3">Password <span className="text-red-600">*</span></label>
-                <div className="relative">
-                    <input type={toggle ? 'password' : 'text'} onChange={handleOnChange} value={form.password} name="password" id="password" className={`border border-solid ${error?.password ? 'border-red-600' : 'border-gray-200'} rounded-sm block w-full px-3 py-2 transition delay-75 focus:outline-0 ${error?.password ? 'focus:border-red-700' : 'focus:border-gray-300'}`} />
-                    <FontAwesomeIcon icon={toggle ? faEye : faEyeSlash} className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer" onClick={togglePassword} />
-                </div>
-                {error?.password && <span className="text-red-600 mt-1 block">{error?.password?.msg}</span>}
-                <button type="submit" className="bg-blue-500 block mt-3 px-3 py-2 text-white font-semibold rounded-sm w-full focus:outline-none">Login</button>
+                <Input labelText="Email" placeholder="Enter email" onChange={handleOnChange} error={error?.email?.msg} value={form?.email} name="email" id="email" type="text" required className="mb-3" disabled={isLoading} />
+
+                <Password name="password" id="password" labelText="Password" placeholder="Valid password" onChange={handleOnChange} error={error?.password?.msg} value={form?.password} required toggle={toggle} togglePassword={togglePassword} disabled={isLoading} />
+
+                <button type="submit" className="bg-blue-500 block mt-3 px-3 py-2 text-white font-semibold rounded-sm w-full focus:outline-none disabled:bg-blue-400" disabled={isLoading}>Login</button>
             </form>
             <p className="text-dark mt-3">Have no account? <Link to="/register" className="text-blue-500 font-semibold">Register</Link></p>
         </div>
