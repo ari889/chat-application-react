@@ -16,10 +16,12 @@ function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
-          <Route path="/inbox" element={<PrivateRoute><Index /></PrivateRoute>} />
-          <Route path="/inbox/:id" element={<PrivateRoute><Index /></PrivateRoute>} />
-          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path='/inbox'>
+            <Route index element={<PrivateRoute><Index /></PrivateRoute>} />
+            <Route path="/:id" element={<PrivateRoute><Index /></PrivateRoute>} />
+          </Route>
         </Routes>
       </Layout>
     </BrowserRouter>
