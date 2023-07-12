@@ -10,6 +10,21 @@ import PrivateRoute from "./components/PrivateRoute"
 function App() {
   const authChecked = useAuthCheck();
 
+  // create socket
+  const socket = io(import.meta.env.VITE_REACT_APP_API__URL, {
+    reconnectionDelay: 200,
+    reconnection: true,
+    reconnectionAttempts: 10,
+    transports: ["websocket"],
+    agent: false,
+    upgrade: false,
+    rejectUnauthorized: false
+  });
+
+  socket.on("message", (data) => {
+    console.log(data)
+  });
+
   return !authChecked ? (
     <div>Checking authenticatyion...</div>
   ) : (
