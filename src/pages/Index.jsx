@@ -18,7 +18,7 @@ const Index = () => {
     const toggle = () => {
         setShow(prevState => !prevState);
     }
-    console.log('dynamic route')
+
     return (
         <div className="m-3 border-2 border-gray-300 flex flex-row justify-normal items-start">
             <div className="p-3 w-[100px] md:w-[250px] lg:w-[350px]">
