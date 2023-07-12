@@ -10,7 +10,7 @@ const ChatBody = () => {
     /**
      * get conversation id from url parameter
      */
-    const { id } = useParams();
+    const { id } = useParams() || {};
 
     /**
      * get current user

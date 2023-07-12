@@ -74,6 +74,7 @@ const Modal = ({ open, control }) => {
             )
                 .unwrap()
                 .then((data) => {
+                    console.log(data)
                     setConversation(data)
                 })
                 .catch((err) => {
