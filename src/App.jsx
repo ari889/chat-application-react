@@ -20,7 +20,7 @@ function App() {
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path='/inbox'>
             <Route index element={<PrivateRoute><Index /></PrivateRoute>} />
-            <Route path="/:id" element={<PrivateRoute><Index /></PrivateRoute>} />
+            <Route path=":id" element={<PrivateRoute><Index /></PrivateRoute>} />
           </Route>
         </Routes>
       </Layout>
