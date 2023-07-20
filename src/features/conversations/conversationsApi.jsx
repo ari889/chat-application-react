@@ -14,7 +14,7 @@ export const conversationsApi = apiSlice.injectEndpoints({
             },
             async onCacheEntryAdded(arg, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) {
                 // create socket
-                const socket = io(import.meta.env.VITE_REACT_APP_API__URL, {
+                const socket = io(import.meta.env.SOCKET_HOST, {
                     reconnectionDelay: 1000,
                     reconnection: true,
                     reconnectionAttemps: 10,
