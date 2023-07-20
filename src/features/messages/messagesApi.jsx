@@ -14,13 +14,13 @@ export const messagesApi = apiSlice.injectEndpoints({
             async onCacheEntryAdded({ id, receiverEmail }, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) {
                 // create socket
                 const socket = io(import.meta.env.VITE_REACT_APP_API__URL, {
-                    reconnectionDelay: 200,
+                    reconnectionDelay: 1000,
                     reconnection: true,
-                    reconnectionAttempts: 10,
+                    reconnectionAttemps: 10,
                     transports: ["websocket"],
                     agent: false,
                     upgrade: false,
-                    rejectUnauthorized: false
+                    rejectUnauthorized: false,
                 });
 
                 try {
