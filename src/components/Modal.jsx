@@ -134,11 +134,12 @@ const Modal = ({ open, control }) => {
                         message,
                         timestamp: new Date().getTime()
                     },
-                    sender: myEmail
+                    sender: loggedInUser,
+                    receiver: participant[0],
                 });
             } else if (conversation?.length === 0) {
                 addConversation({
-                    sender: myEmail,
+                    sender: loggedInUser.email,
                     data: {
                         participants: `${myEmail}-${participant[0].email}`,
                         users: [loggedInUser._id, participant[0]._id],

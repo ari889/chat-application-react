@@ -46,7 +46,8 @@ const Options = ({ info }) => {
              */
             editConversation({
                 id: info?.conversationId,
-                sender: loggedInUser?.email,
+                sender: loggedInUser,
+                receiver: participantUser,
                 data: {
                     participants: `${loggedInUser.email}-${participantUser.email}`,
                     users: [loggedInUser._id, participantUser._id],

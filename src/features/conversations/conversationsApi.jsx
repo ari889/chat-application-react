@@ -1,6 +1,7 @@
 import { apiSlice } from "../api/apiSlice";
 import { messagesApi } from "../messages/messagesApi";
 import io from 'socket.io-client'
+import { v4 as uuid } from 'uuid'
 
 export const conversationsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -133,27 +134,50 @@ export const conversationsApi = apiSlice.injectEndpoints({
             }
         }),
         editConversation: builder.mutation({
-            query: ({ id, data, sender }) => ({
+            query: ({ id, data, sender, receiver }) => ({
                 url: `/conversations/${id}`,
                 method: "PATCH",
                 body: data
             }),
             async onQueryStarted(arg, { queryFulfilled, dispatch }) {
                 // optimistic cache update start
-                const pathResult = dispatch(
+                const convResult = dispatch(
                     apiSlice.util.updateQueryData(
                         "getConversations",
-                        arg.sender,
+                        arg?.sender?.email,
                         (draft) => {
                             /**
                              * find the conversation from draft state and update
                              */
-                            const draftConversation = draft.data.find(c => c._id == arg.id);
+                            const draftConversation = draft?.data?.find(c => c._id == arg.id);
 
                             if (draftConversation) {
                                 draftConversation.message = arg.data.message;
                                 draftConversation.timestamp = arg.data.timestamp;
                             }
+                        }
+                    )
+                );
+
+                const messageID = "tmp_message_" + uuid();
+                /**
+                 * create message object
+                 */
+                const messageObj = {
+                    _id: messageID,
+                    conversationId: arg?.id,
+                    sender: arg.sender,
+                    receiver: arg.receiver,
+                    message: arg.data.message,
+                    timestamp: arg.data.timestamp
+                };
+
+                const messageResult = dispatch(
+                    apiSlice.util.updateQueryData(
+                        "getMessages",
+                        { id: arg?.id, receiverEmail: arg?.sender?.email },
+                        (draft) => {
+                            draft?.data?.unshift(messageObj);
                         }
                     )
                 )
@@ -167,14 +191,14 @@ export const conversationsApi = apiSlice.injectEndpoints({
                          * silent entry to the message table
                          */
                         const users = conversation?.data?.users;
-                        const senderUser = users.find((user) => user.email === arg.sender); // sender info
-                        const receiverUser = users.find(user => user.email !== arg.sender); // receiver info
+                        const senderUser = users.find((user) => user._id === arg?.sender?._id); // sender info
+                        const receiverUser = users.find(user => user._id !== arg?.sender?._id); // receiver info
 
                         const res = await dispatch(
                             messagesApi.endpoints.addMessage.initiate({
                                 conversationId: conversation?.data?._id,
-                                sender: senderUser._id,
-                                receiver: receiverUser._id,
+                                sender: senderUser?._id,
+                                receiver: receiverUser?._id,
                                 message: arg.data.message,
                                 timestamp: arg.data.timestamp
                             })
@@ -188,7 +212,11 @@ export const conversationsApi = apiSlice.injectEndpoints({
                                 "getMessages",
                                 { id: res?.conversationId, receiverEmail: res?.sender?.email },
                                 (draft) => {
-                                    draft?.data?.unshift(res);
+                                    let findMessage = draft?.data.find(mes => mes?._id == messageID)
+
+                                    if (findMessage?._id) {
+                                        findMessage._id = res?._id;
+                                    }
                                     if (draft?.data?.length > Number(import.meta.env.VITE_MESSAGES_PER_PAGE)) {
                                         draft?.data?.pop();
                                     }
@@ -198,7 +226,8 @@ export const conversationsApi = apiSlice.injectEndpoints({
                         // end update
                     }
                 } catch (error) {
-                    pathResult.undo();
+                    convResult.undo();
+                    messageResult.undo();
                 }
             }
         })
